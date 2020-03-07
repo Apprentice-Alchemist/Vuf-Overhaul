@@ -7,7 +7,7 @@
   <init>
     <include id="vuf/vuf.xml"/>
     <vehicle id="jeep" extends="jeep">
-      <mount><invokeLater><action>mountVehicle(player.vehicle); trace(player.vehicle);</action></invokeLater></mount>
+      <mount><invokeLater><action>mountVehicle(player.vehicle);</action></invokeLater></mount>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" max_health="500"/>

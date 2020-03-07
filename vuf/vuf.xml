@@ -30,8 +30,8 @@
     var vehicle = v == null ? getLocalPlayer().vehicle : v;
     if (vehicle == null) return;
     if (window == null && window != false) window = true;
-    trace('updateVehicle' + vehicle);
-      try{throw
+    // trace('updateVehicle' + vehicle);
+      // try{throw
         // updateHealth(vehicle);
         // updateDefense(vehicle);
         updateSpeed(vehicle);
@@ -39,17 +39,17 @@
         // updateFuel(vehicle);
         // updateHitDamage(vehicle);
         updateCloak(vehicle);
-      }catch(e:Dynamic){
-        trace('Updaters '+e);
-      }
+      // }catch(e:Dynamic){
+      //   trace('Updaters '+e);
+      // }
       var player = getLocalPlayer();
-      trace('Vehicle ' + player.vehicle + 'GUI ' + player.vehicle.gui);
-      trace(player.gui + player.getGUI());
-      try{throw
+      // trace('Vehicle ' + player.vehicle + 'GUI ' + player.vehicle.gui);
+      // trace(player.gui + player.getGUI());
+      // try{throw
       vehicle.player.vehicle.gui.init();
-      }catch(e:Dynamic){
-        trace('GUI '+ e);
-      }
+      // }catch(e:Dynamic){
+      //   trace('GUI '+ e);
+      // }
 
       // if (window == true){
       // evalXml('&lt;closeWindows/>');
@@ -63,20 +63,14 @@
     //   eval(info.'+stat+' = getStat(stat,vehicle));
     // }
 
-    function getStat(stat, ?v){
-      // try {throw
+    function getStat(stat, ?v){    
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
-      // }catch(error:Dynamic){trace('StatGetter1 '+  error);}
-      // try {throw
       if (vehicle == null) return;
-    // }catch(error:Dynamic){trace('StatGetter2 ' +  error);}
-      // try {throw
       var info = vehicle.info;
       var equipment = vehicle.equipment;
       var xml = info.xml;
       var stat1 = xml.get(stat);
       var slot = equipment.getSlots();
-    // }catch(error:Dynamic){trace('StatGetter3 '+  error);}
 		    while(slot.hasNext()) {
 			      var slot1 = slot.next();
             var stat2;
@@ -85,9 +79,10 @@
             // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' +  error);}
             // try{throw
               if (stat2 != null && stat2 != 0){stat1 = Std.parsInt(stat1) + Std.parsInt(stat2);};
+
             // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' + error);}
 		    }
-        return Std.parsInt(stat1);
+        return stat1;
     }
 
 
