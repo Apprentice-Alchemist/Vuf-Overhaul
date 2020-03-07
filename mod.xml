@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mod>
+  <name>Vuf 2.0</name>
+  <description>A new VUF.</description>
+  <author>Apprentice Alchemist</author>
+  <version>0.0.0</version>
+  <init>
+    <include id="vuf/vuf.xml"/>
+    <vehicle id="jeep" extends="jeep">
+      <mount><invokeLater><action>mountVehicle(player.vehicle); trace(player.vehicle);</action></invokeLater></mount>
+      <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
+    </vehicle>
+    <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" max_health="500"/>
+    <item id="jeep_weigth" type="equipment" slot="attack" equipOn="jeep" icon="stat.weigth" max_weigth="50000"/>
+    <item id="jeep_defense" type="equipment" slot="attack" equipOn="jeep" icon="stat.defense" defense="50000"/>
+    <item id="jeep_hide" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hide="true">
+      <handleSecond>
+        <action>
+          updateCloak();
+        </action>
+      </handleSecond>
+    </item>
+    <item id="jeep_speed" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" speed="5" speedY="5"/>
+    <item id="jeep_hitDamage" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hitDamage="200"/>
+  </init>
+</mod>

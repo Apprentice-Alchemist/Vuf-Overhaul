@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vuf>
+  <action>
+    function mountVehicle(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      trace('mount');
+    	var slot = vehicle.equipment.getSlots();
+    	while(slot.hasNext()) {
+    		var slot1 = slot.next();
+        vehicle.equipment.get(slot1).removeEventListener("updated",function(e){updateVehicle(vehicle);});
+    		vehicle.equipment.get(slot1).addEventListener("updated",function(e){updateVehicle(vehicle);});
+    	}
+      updateVehicle(vehicle,false);
+    }
+
+    function dismountVehicle(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      trace('dismount');
+      if (vehicle == null) return;
+      var slot = vehicle.equipment.getSlots();
+      while(slot.hasNext()) {
+        var slot1 = slot.next();
+        vehicle.equipment.get(slot1).removeEventListener("updated",function(e){updateVehicle(vehicle);});
+      }
+    }
+
+
+    function updateVehicle(?v,?window){
+    var vehicle = v == null ? getLocalPlayer().vehicle : v;
+    if (vehicle == null) return;
+    if (window == null && window != false) window = true;
+    trace('updateVehicle' + vehicle);
+      try{throw
+        // updateHealth(vehicle);
+        // updateDefense(vehicle);
+        updateSpeed(vehicle);
+        // updateWeight(vehicle);
+        // updateFuel(vehicle);
+        // updateHitDamage(vehicle);
+        updateCloak(vehicle);
+      }catch(e:Dynamic){
+        trace('Updaters '+e);
+      }
+      var player = getLocalPlayer();
+      trace('Vehicle ' + player.vehicle + 'GUI ' + player.vehicle.gui);
+      trace(player.gui + player.getGUI());
+      try{throw
+      vehicle.player.vehicle.gui.init();
+      }catch(e:Dynamic){
+        trace('GUI '+ e);
+      }
+
+      // if (window == true){
+      // evalXml('&lt;closeWindows/>');
+      // vehicle.manageEquipment();
+      // }
+    }
+    // function setStat(stat, ?v){
+    //   var vehicle = v == null ? getLocalPlayer().vehicle : v;
+    //   if (vehicle == null) return;
+    //   var info = vehicle.info;
+    //   eval(info.'+stat+' = getStat(stat,vehicle));
+    // }
+
+    function getStat(stat, ?v){
+      // try {throw
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      // }catch(error:Dynamic){trace('StatGetter1 '+  error);}
+      // try {throw
+      if (vehicle == null) return;
+    // }catch(error:Dynamic){trace('StatGetter2 ' +  error);}
+      // try {throw
+      var info = vehicle.info;
+      var equipment = vehicle.equipment;
+      var xml = info.xml;
+      var stat1 = xml.get(stat);
+      var slot = equipment.getSlots();
+    // }catch(error:Dynamic){trace('StatGetter3 '+  error);}
+		    while(slot.hasNext()) {
+			      var slot1 = slot.next();
+            var stat2;
+            // try {throw
+              var stat2 = (equipment.getItem(slot1) == null) ? null : equipment.getItem(slot1).info.xml.get(stat);
+            // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' +  error);}
+            // try{throw
+              if (stat2 != null && stat2 != 0){stat1 = Std.parsInt(stat1) + Std.parsInt(stat2);};
+            // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' + error);}
+		    }
+        return Std.parsInt(stat1);
+    }
+
+
+    function updateHealth(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      vehicle.info.health = getStat('health',vehicle);
+      if (vehicle.health > vehicle.info.health){vehicle.health = vehicle.info.health;};
+    }
+
+    function updateDefense(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      var info = vehicle.info;
+      var defense = getStat('defense',vehicle);
+      info.front_defense = defense;
+      info.back_defense = defense;
+    }
+
+    function updateSpeed(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      vehicle.info.speedX = getStat('speed',vehicle);
+      vehicle.info.speedY = getStat('speedY',vehicle);
+    }
+
+
+    function updateWeight(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      vehicle.info.max_weight.set(getStat('max_weight',vehicle));
+    }
+
+    function updateFuel(?v){
+      trace('updateFuel is not enabled yet');
+    }
+    function updateRepair(?v){
+      trace('updateRepair is not enabled yet');
+    }
+    function updateRefuel(?v){
+      trace('updateRefuel is not enabled yet');
+    }
+
+    function updateHitDamage(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      vehicle.hitDamage = getStat('hitDamage',vehicle);
+    }
+
+    function updateCloak(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      var equipment = vehicle.equipment;
+      var slot = equipment.getSlots();
+      var hidden = false;
+		   while(slot.hasNext()) {
+			  var slot1 = slot.next();
+			  var hidden1 = equipment.getItem(slot1).info.xml.get('hide');
+        if (hidden1 == 'true'){hidden = true;}
+		   }
+      if (hidden == true){
+        vehicle.setHidden(true);
+        vehicle.renderer.lerp(new AlphaKeyframe(0.5),10);
+      }
+      if (hidden == false){
+      vehicle.setHidden(false);
+      vehicle.renderer.lerp(new AlphaKeyframe(1),10);
+      }
+    }
+  </action>
+</vuf>
