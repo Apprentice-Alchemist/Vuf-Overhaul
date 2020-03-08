@@ -10,8 +10,8 @@
       <mount><invokeLater><action>mountVehicle(player.vehicle);</action></invokeLater></mount>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
-    <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" max_health="500"/>
-    <item id="jeep_weigth" type="equipment" slot="attack" equipOn="jeep" icon="stat.weigth" max_weigth="50000"/>
+    <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>
+    <item id="jeep_weight" type="equipment" slot="attack" equipOn="jeep" icon="stat.weight" max_weight="50000"/>
     <item id="jeep_defense" type="equipment" slot="attack" equipOn="jeep" icon="stat.defense" defense="50000"/>
     <item id="jeep_hide" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hide="true">
       <handleSecond>

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vuf>
   <action>
+  // function err(expr,line,?color){
+  //   var f = line.file;
+  //   var n = line.number;
+  //   var c = color == null ? 0xffffff : color;
+  //   log(f + ' ' + n + ' ' + expr,c);
+  // }
     function mountVehicle(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
@@ -30,14 +36,14 @@
     var vehicle = v == null ? getLocalPlayer().vehicle : v;
     if (vehicle == null) return;
     if (window == null && window != false) window = true;
-    // trace('updateVehicle' + vehicle);
+    trace('updateVehicle');
       // try{throw
-        // updateHealth(vehicle);
-        // updateDefense(vehicle);
+        updateHealth(vehicle);
+        updateDefense(vehicle);
         updateSpeed(vehicle);
-        // updateWeight(vehicle);
-        // updateFuel(vehicle);
-        // updateHitDamage(vehicle);
+        updateWeight(vehicle);
+        updateFuel(vehicle);
+        updateHitDamage(vehicle);
         updateCloak(vehicle);
       // }catch(e:Dynamic){
       //   trace('Updaters '+e);
@@ -51,10 +57,10 @@
       //   trace('GUI '+ e);
       // }
 
-      // if (window == true){
-      // evalXml('&lt;closeWindows/>');
-      // vehicle.manageEquipment();
-      // }
+      if (window == true){
+      evalXml('&lt;closeWindows modal="true"/>');
+      vehicle.manageEquipment();
+      }
     }
     // function setStat(stat, ?v){
     //   var vehicle = v == null ? getLocalPlayer().vehicle : v;
@@ -63,9 +69,10 @@
     //   eval(info.'+stat+' = getStat(stat,vehicle));
     // }
 
-    function getStat(stat, ?v){    
+    function getStat(stat, ?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
+      // trace('getStat ' + vehicle.info);
       var info = vehicle.info;
       var equipment = vehicle.equipment;
       var xml = info.xml;
@@ -73,15 +80,22 @@
       var slot = equipment.getSlots();
 		    while(slot.hasNext()) {
 			      var slot1 = slot.next();
-            var stat2;
+            // trace('GetStat WhileLoop '+slot1);
             // try {throw
-              var stat2 = (equipment.getItem(slot1) == null) ? null : equipment.getItem(slot1).info.xml.get(stat);
-            // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' +  error);}
-            // try{throw
-              if (stat2 != null && stat2 != 0){stat1 = Std.parsInt(stat1) + Std.parsInt(stat2);};
+            log(equipment.get(slot1).get().info.xml.get(stat),0xff0000);
+            log(equipment.getItem(slot1) == null,0x00ff00);
 
+            if (equipment.getItem(slot1) == null){ stat2 = null; log('STAT2 1 ' + stat2,0x0000ff);}
+            if (equipment.getItem(slot1) != null){ stat2 = equipment.getItem(slot1).info.xml.get(stat); log('STAT2 1 ' + stat2,0x0000ff);}
+              // var stat2 = (equipment.getItem(slot1) == null) ? null : equipment.getItem(slot1).info.xml.get(stat);
+            // }catch(error:Dynamic){var stat2 = null;}
+            // try{throw
+              if (stat2 != null && stat2 != 0){stat1 = Std.parseInt(stat1) + Std.parseInt(stat2);};
+              trace(Std.parseInt(stat1) + Std.parseInt(stat2););
+              trace(stat2 + ' ' + stat1);
             // }catch(error:Dynamic){trace('StatGetter4 ' + slot1 + ' ' + error);}
 		    }
+        trace(stat1);
         return stat1;
     }
 
@@ -89,8 +103,9 @@
     function updateHealth(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
+      trace('updateHealth ' + vehicle.info);
       vehicle.info.health = getStat('health',vehicle);
-      if (vehicle.health > vehicle.info.health){vehicle.health = vehicle.info.health;};
+      if (vehicle.health > vehicle.info.health){vehicle.setHealth(vehicle.info.health);};
     }
 
     function updateDefense(?v){
@@ -106,7 +121,7 @@
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
       vehicle.info.speedX = getStat('speed',vehicle);
-      vehicle.info.speedY = getStat('speedY',vehicle);
+      vehicle.info.speedY = getStat('speedY',vehicle) == null ? getStat('speed',vehicle) : getStat('speedY',vehicle);
     }
 
 
@@ -137,19 +152,25 @@
       if (vehicle == null) return;
       var equipment = vehicle.equipment;
       var slot = equipment.getSlots();
-      var hidden = false;
+      var hidden = vehicle.info.xml.get('hide');
 		   while(slot.hasNext()) {
 			  var slot1 = slot.next();
-			  var hidden1 = equipment.getItem(slot1).info.xml.get('hide');
+			  var hidden1 = equipment.getItem(slot1) == null ? null : equipment.getItem(slot1).info.xml.get('hide');
         if (hidden1 == 'true'){hidden = true;}
+        if (hidden1 == 'false'){hidden = false;}
 		   }
+       // trace('Hidden ' + hidden);
       if (hidden == true){
         vehicle.setHidden(true);
-        vehicle.renderer.lerp(new AlphaKeyframe(0.5),10);
-      }
+        if (vehicle.renderer.alpha > 0.5) vehicle.renderer.lerp(new AlphaKeyframe(0.5),10);
+      }else
       if (hidden == false){
-      vehicle.setHidden(false);
-      vehicle.renderer.lerp(new AlphaKeyframe(1),10);
+        vehicle.setHidden(false);
+        if (vehicle.renderer.alpha &lt;= 0.5) vehicle.renderer.lerp(new AlphaKeyframe(1),10);
+      }else
+      if (hidden == null){
+        vehicle.setHidden(false);
+        if (vehicle.renderer.alpha &lt;= 0.5) vehicle.renderer.lerp(new AlphaKeyframe(1),10);
       }
     }
   </action>
