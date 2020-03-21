@@ -35,7 +35,7 @@
         updateDefense(vehicle);
         updateSpeed(vehicle);
         updateWeight(vehicle);
-        updateFuel(vehicle);
+        // updateFuel(vehicle);
         updateHitDamage(vehicle);
         updateCloak(vehicle);
       // }catch(e:Dynamic){
@@ -78,7 +78,7 @@
             if (equipment.get(slot1).value != null){ stat2 = equipment.getItem(slot1).info.xml.get(stat);}
               if (stat2 != null){stat1 = Std.parseInt(stat1) + Std.parseInt(stat2);};
 		    }
-        trace("STAT1 : " + stat1);
+        // trace("STAT1 : " + stat1);
         return stat1;
     }
 
@@ -86,7 +86,7 @@
     function updateHealth(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
-      trace('updateHealth ' + vehicle.info);
+      // trace('updateHealth ' + vehicle.info);
       vehicle.info.health = getStat('health',vehicle);
       if (vehicle.health > vehicle.info.health){vehicle.setHealth(vehicle.info.health);};
     }

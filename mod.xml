@@ -11,8 +11,8 @@
     </changelog>
     <include id="vuf/vuf.xml"/>
     <vehicle id="jeep" extends="jeep">
-      <mount><invokeLater><action>mountVehicle(this); trace(getStat('speed',this));</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
-      <changeEquip><action>updateVehicle(); trace('UPDATED');</action></changeEquip>
+      <mount><invokeLater><action>mountVehicle(this);</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
+      <changeEquip><action>updateVehicle();</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>
