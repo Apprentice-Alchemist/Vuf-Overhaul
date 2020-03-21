@@ -70,6 +70,7 @@
       var equipment = vehicle.equipment;
       var xml = info.xml;
       var stat1 = xml.get(stat);
+      if (stat1 == null) stat1 = 0;
       var slot = equipment.getSlots();
 		    while(slot.hasNext()) {
 			      var slot1 = slot.next();
