@@ -9,6 +9,8 @@
     		var slot1 = slot.next();
         vehicle.equipment.get(slot1).removeEventListener("updated",function(e){vehicle.runEvent(getLocalPlayer(),'changeEquip');});
     		vehicle.equipment.get(slot1).addEventListener("updated",function(e){vehicle.runEvent(getLocalPlayer(),'changeEquip');});
+        vehicle.removeEventListener("update_fuel", storeFuel);
+        vehicle.addEventListener("update_fuel", storeFuel);
     	}
       // updateVehicle(vehicle,false);
     }
@@ -21,6 +23,7 @@
       while(slot.hasNext()) {
         var slot1 = slot.next();
         vehicle.equipment.get(slot1).removeEventListener("updated",function(e){vehicle.runEvent(getLocalPlayer(),'changeEquip');});
+        vehicle.removeEventListener("update_fuel", storeFuel);
       }
     }
 
@@ -28,38 +31,15 @@
     function updateVehicle(?v){
     var vehicle = v == null ? getLocalPlayer().vehicle : v;
     if (vehicle == null) return;
-    // var window = null;
-    // trace('updateVehicle');
-      // try{throw
         updateHealth(vehicle);
         updateDefense(vehicle);
+        updateMine(vehicle);
         updateSpeed(vehicle);
         updateWeight(vehicle);
-        // updateFuel(vehicle);
         updateHitDamage(vehicle);
         updateCloak(vehicle);
-      // }catch(e:Dynamic){
-      //   trace('Updaters '+e);
-      // }
-      // trace('Vehicle ' + player.vehicle + 'GUI ' + player.vehicle.gui);
-      // trace(player.gui + player.getGUI());
-      // try{throw
-      vehicle.gui.init();
-      // }catch(e:Dynamic){
-      //   trace('GUI '+ e);
-      // }
-
-      // if (window == true){
-      // evalXml('&lt;closeWindows modal="true"/>');
-      // vehicle.manageEquipment();
-      // }
+        vehicle.gui.init();
     }
-    // function setStat(stat, ?v){
-    //   var vehicle = v == null ? getLocalPlayer().vehicle : v;
-    //   if (vehicle == null) return;
-    //   var info = vehicle.info;
-    //   eval(info.'+stat+' = getStat(stat,vehicle));
-    // }
 </action><action>
     function getStat(stat, ?v){
       var vehicle = (v == null) ? getLocalPlayer().vehicle : v;
@@ -100,11 +80,20 @@
       info.back_defense = defense;
     }
 </action><action>
+function updateMine(?v){
+  var vehicle = v == null ? getLocalPlayer().vehicle : v;
+  if (vehicle == null) return;
+  var info = vehicle.info;
+  vehicle.mine_power = getStat("mine");
+  vehicle.mine_speed = getStat("mine_speed");
+  vehicle.mine_fuel = getStat("mine_fuel");
+}
+</action><action>
     function updateSpeed(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
       vehicle.info.speedX = getStat('speed',vehicle);
-      vehicle.info.speedY = getStat('speedY',vehicle) == null ? getStat('speed',vehicle) : getStat('speedY',vehicle);
+      vehicle.info.speedY = getStat('speedY',vehicle) == (null || 0) ? getStat('speed',vehicle) : getStat('speedY',vehicle);
     }
 
 </action><action>
@@ -115,7 +104,21 @@
     }
 </action><action>
     function updateFuel(?v){
-      trace('updateFuel is not enabled yet');
+      var vehicle = (v == null) ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      var info = vehicle.info;
+      var equipment = vehicle.equipment;
+      var xml = info.xml;
+      var max_fuel = null;
+      var maxReplaceFuel = null;
+      var slot = equipment.getSlots();
+		    while(slot.hasNext()) {
+			      var slot1 = slot.next();
+            if (equipment.get(slot1).value == null){continue;}
+            if (equipment.get(slot1).value != null){
+
+		    }
+        if (maxReplaceFuel == null){vehicle.info.fuel = Std.parseInt(max_fuel);}
     }
     </action><action>
     function updateRepair(?v){
@@ -126,7 +129,33 @@
       trace('updateRefuel is not enabled yet');
     }
     </action><action>
-
+    function setElectric(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      var info = vehicle.info;
+        vehicle.fuelName = "power";
+        info.fuelItems = null;
+        info.fuelMap = null;
+        x = new Xml();
+        x.nodeName = "fuelStorage";
+        info.xml.second.xml.addChild(x);
+        for (fXml in info.xml.elementsNamed('fuel')) {
+            x.addChild(fXml);
+        }
+    }
+    </action><action>
+    function storeFuel(event) {
+        var vehicle = event.target;
+        var slot = vehicle.equipment.getSlots();
+        while (slot.hasNext()){
+            slot1 = slot.next();
+            eItem = slot1.get();
+            if (eItem != null && eItem.info.xml.elementsNamed('storeFuel').next() != null) {
+                eItem.value = eItem.info.getDurability() - veh.fuel;
+            }
+        }
+    }
+    </action><action>
     function updateHitDamage(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
@@ -145,7 +174,6 @@
         if (hidden1 == 'true'){hidden = true;}
         if (hidden1 == 'false'){hidden = false;}
 		   }
-       // trace('Hidden ' + hidden);
       if (hidden == true){
         vehicle.setHidden(true);
         if (vehicle.renderer.alpha > 0.5) vehicle.renderer.lerp(new AlphaKeyframe(0.5),10);

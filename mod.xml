@@ -15,6 +15,7 @@
       <changeEquip><action>updateVehicle();</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
+    <item id="jeep_fly" type="equipment" slot="attack" equipOn="jeep" flight_height="100"/>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>
     <item id="jeep_weight" type="equipment" slot="attack" equipOn="jeep" icon="stat.weight" max_weight="50000"/>
     <item id="jeep_defense" type="equipment" slot="attack" equipOn="jeep" icon="stat.defense" defense="50000"/>
