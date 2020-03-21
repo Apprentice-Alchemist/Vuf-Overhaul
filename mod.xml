@@ -4,21 +4,28 @@
   <description>A new VUF.</description>
   <author>Apprentice Alchemist</author>
   <version>0.0.0</version>
+
   <init>
+    <changelog>
+      A changelog!
+    </changelog>
     <include id="vuf/vuf.xml"/>
     <vehicle id="jeep" extends="jeep">
-      <mount><invokeLater><action>mountVehicle(player.vehicle);</action></invokeLater></mount>
+      <mount><invokeLater><action>mountVehicle(this); trace(getStat('speed',this));</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
+      <changeEquip><action>updateVehicle(); trace('UPDATED');</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>
     <item id="jeep_weight" type="equipment" slot="attack" equipOn="jeep" icon="stat.weight" max_weight="50000"/>
     <item id="jeep_defense" type="equipment" slot="attack" equipOn="jeep" icon="stat.defense" defense="50000"/>
     <item id="jeep_hide" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hide="true">
+      <onEquip><action>updateCloak();</action></onEquip>
       <handleSecond>
         <action>
           updateCloak();
         </action>
       </handleSecond>
+      <onUnequip><action>updateCloak();</action></onUnequip>
     </item>
     <item id="jeep_speed" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" speed="5" speedY="5"/>
     <item id="jeep_hitDamage" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hitDamage="200"/>
