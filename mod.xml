@@ -9,12 +9,25 @@
     <changelog>
       A changelog!
     </changelog>
+    <!-- getMod("vuf_2.0").init.firstElement("changelog").children[0] -->
     <include id="vuf/vuf.xml"/>
     <vehicle id="jeep" extends="jeep">
       <mount><invokeLater><action>mountVehicle(this);</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
-      <changeEquip><action>updateVehicle();</action></changeEquip>
+      <changeEquip><action>updateVehicle(); trace("ChangeEquip");</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
+    <item id="jeep_fuel" type="equipment" slot="attack" equipOn="jeep" durability="1000">
+      <fuel method="replace" value="1000" storeFuel="true">
+        <fuelChange id="coal" value="50"/>
+        <fuelChange id="oil" value="100"/>
+        <fuelChange id="refined_oil" value="500"/>
+      </fuel>
+    </item>
+    <item id="jeep_repair" type="equipment" slot="attack" equipOn="jeep">
+      <repair>
+        <repairChange id="wood" value="10"/>
+      </repair>
+    </item>
     <item id="jeep_fly" type="equipment" slot="attack" equipOn="jeep" flight_height="100"/>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>
     <item id="jeep_weight" type="equipment" slot="attack" equipOn="jeep" icon="stat.weight" max_weight="50000"/>
