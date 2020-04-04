@@ -169,10 +169,13 @@
       fuel = fuel.next();
       var fuelChange = new StringMap();
       var fuelItem = new Array();
-      try{throw
+      try{
       for (o in fuel.elementsNamed("fuelChange")){
-        trace(o); fuelChange.set(o.get("id"),Std.parseInt(o.get("value"))); fuelItem.push(Recipe.createFuel(o.get("id"), Std.parseInt(o.get("value"))));
-      };}catch(e:Dynamic){trace(e);}
+        trace(o);
+        fuelChange.set(o.get("id"),Std.parseInt(o.get("value")));
+        fuelItem.push(Recipe.createFuel(o.get("id"),Std.parseInt(o.get("value"))));
+      };
+    }catch(e:Dynamic){trace(e);}
       trace([fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem]);
       return [fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem];
     }
