@@ -12,7 +12,6 @@
         vehicle.removeEventListener("update_fuel", storeFuel);
         vehicle.addEventListener("update_fuel", storeFuel);
     	}
-      // updateVehicle(vehicle,false);
     }
 </action><action>
     function dismountVehicle(?v){
@@ -45,7 +44,6 @@
     function getStat(stat, ?v){
       var vehicle = (v == null) ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
-      // trace("getStat " + vehicle.info);
       var info = vehicle.info;
       if (info == null) return "WTF";
       var equipment = vehicle.equipment;
@@ -55,11 +53,10 @@
       var slot = equipment.getSlots();
 		    while(slot.hasNext()) {
 			      var slot1 = slot.next();
-            if (equipment.get(slot1).value == null){ stat2 = null;}
-            if (equipment.get(slot1).value != null){ stat2 = equipment.getItem(slot1).info.xml.get(stat);}
+            if (equipment.get(slot1).value == null){stat2 = null;}
+            if (equipment.get(slot1).value != null){stat2 = equipment.getItem(slot1).info.xml.get(stat);}
               if (stat2 != null){stat1 = Std.parseInt(stat1) + Std.parseInt(stat2);};
 		    }
-        // trace("STAT1 : " + stat1);
         return stat1;
     }
 
@@ -67,7 +64,6 @@
     function updateHealth(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
-      // trace("updateHealth " + vehicle.info);
       vehicle.info.health = getStat("health",vehicle);
       if (vehicle.health > vehicle.info.health){vehicle.setHealth(vehicle.info.health);};
     }
@@ -81,14 +77,14 @@
       info.back_defense = defense;
     }
 </action><action>
-function updateMine(?v){
-  var vehicle = v == null ? getLocalPlayer().vehicle : v;
-  if (vehicle == null) return;
-  var info = vehicle.info;
-  vehicle.mine_power = getStat("mine");
-  vehicle.mine_speed = getStat("mine_speed");
-  vehicle.mine_fuel = getStat("mine_fuel");
-}
+    function updateMine(?v){
+      var vehicle = v == null ? getLocalPlayer().vehicle : v;
+      if (vehicle == null) return;
+      var info = vehicle.info;
+      vehicle.mine_power = getStat("mine");
+      vehicle.mine_speed = getStat("mine_speed");
+      vehicle.mine_fuel = getStat("mine_fuel");
+    }
 </action><action>
     function updateSpeed(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
@@ -96,7 +92,6 @@ function updateMine(?v){
       vehicle.info.speedX = getStat("speed",vehicle);
       vehicle.info.speedY = getStat("speedY",vehicle) == (null || 0) ? getStat("speed",vehicle) : getStat("speedY",vehicle);
     }
-
 </action><action>
     function updateWeight(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
@@ -114,12 +109,10 @@ function updateMine(?v){
       var maxReplaceFuel = 0;
       var isElectric = null;
       var slot = equipment.getSlots();
-      trace("update_fuel");
 		    while(slot.hasNext()) {
 			      var slot1 = slot.next();
             if (equipment.get(slot1).value == null){ trace("update_fuel_continue"); continue;}
             if (equipment.get(slot1).value != null){
-              trace("update_fuel_2");
               var p = parseForFuel(slot1);
               if(p == null){continue;}
               if (p != null){
@@ -140,9 +133,10 @@ function updateMine(?v){
                     tempFuelMap.set(o,temp_fuel_change.get(o));
                     temp_fuelItem.push(Recipe.createFuel(o,temp_fuel_change.get(o)));
                   }
-                  try{throw if (temp_fuelMap.keys().hasNext()){info.fuelItems = temp_fuelItems; info.fuelMap = temp_fuelMap;};}catch(e:Dynamic){trace(e);}
-
-
+                  if(temp_fuelMap.keys().hasNext()){
+                    info.fuelItems = temp_fuelItems;
+                    info.fuelMap = temp_fuelMap;
+                  }
 		           }
              }
            }
@@ -154,16 +148,13 @@ function updateMine(?v){
              else {vehicle.info.fuel = Std.parseInt(maxReplaceFuel);};} else {
              trace("Update Vehicle catch 1 : " + error);}
            }
-           try {throw   loadFuel(vehicle);
-
-
-           } catch (error:Dynamic) {
+           try{loadFuel(vehicle);
+           }catch(error:Dynamic){
              trace(error);
            }
-        try{throw
-
-        if (isElectric){setElectric(vehicle);};}catch(e:Dynamic){if(e == null){if (isElectric){setElectric(vehicle);};}else{trace("Update Vehicle catch 2 : " + e);}}
-    }
+        try{if(isElectric){
+          setElectric(vehicle);
+        };}catch(e:Dynamic){trace(e);}
     </action><action>
 
     function parseForFuel(s){
