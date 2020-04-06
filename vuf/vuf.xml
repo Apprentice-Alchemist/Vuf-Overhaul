@@ -107,7 +107,7 @@
       var xml = info.xml;
       var max_fuel = 0;
       var maxReplaceFuel = 0;
-      var isElectric = null;
+      var isElectric = vehicle.fuelName == "power";
       var slot = vehicle.equipment.get("engine");
       if (slot.get() == null){return null;}
       var fuel = slot.get().info.xml.elementsNamed("fuel");
