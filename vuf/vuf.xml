@@ -129,7 +129,7 @@
         fuelMap = new StringMap();
         for (o in fuel.elementsNamed("fuelChange")){
             fuelMap.set(o.get("id"),Std.parseInt(o.get("value")));
-            fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value")));
+            fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value"))));
         }
         if(fuelMap.keys().hasNext()){
             info.fuelItems = fuelItems;
