@@ -108,92 +108,62 @@
       var max_fuel = 0;
       var maxReplaceFuel = 0;
       var isElectric = null;
-      var slot = equipment.getSlots();
-		    while(slot.hasNext()) {
-			      var slot1 = slot.next();
-            if (equipment.get(slot1).value == null){ trace("update_fuel_continue"); continue;}
-            if (equipment.get(slot1).value != null){
-              var p = parseForFuel(slot1);
-              if(p == null){continue;}
-              if (p != null){
-                trace(p);
-                var temp_method = p[0];
-                var temp_fuel = p[1];
-                var temp_electric = p[2];
-                var temp_fuel_change = p[3];
-                isElectric = temp_electric;
-                  if (temp_method == 'add'){
-                    max_fuel = Std.parseInt(xml.get("fuel")) + Std.parseInt(temp_fuel);
-                  } else if(temp_method == 'replace'){
-                    maxReplaceFuel = Std.parseInt(temp_fuel);
-                  }
-                temp_fuelItems = [];
-                temp_fuelMap = new StringMap();
-                  for (o in temp_fuel_change){
-                    tempFuelMap.set(o,temp_fuel_change.get(o));
-                    temp_fuelItem.push(Recipe.createFuel(o,temp_fuel_change.get(o)));
-                  }
-                  if(temp_fuelMap.keys().hasNext()){
-                    info.fuelItems = temp_fuelItems;
-                    info.fuelMap = temp_fuelMap;
-                  }
-		           }
-             }
-           }
-           try {throw
-             if (maxReplaceFuel == 0){vehicle.info.fuel = Std.parseInt(max_fuel);}
-             else {vehicle.info.fuel = Std.parseInt(maxReplaceFuel);};
-           } catch (error:Dynamic) {
-             if(error == 0){if (maxReplaceFuel == 0){vehicle.info.fuel = Std.parseInt(max_fuel);}
-             else {vehicle.info.fuel = Std.parseInt(maxReplaceFuel);};} else {
-             trace("Update Vehicle catch 1 : " + error);}
-           }
-           try{loadFuel(vehicle);
-           }catch(error:Dynamic){
-             trace(error);
-           }
-        try{if(isElectric){
-          setElectric(vehicle);
-        };}catch(e:Dynamic){trace(e);}
+      var slot = vehicle.equipment.get("engine");
+      if (slot.get() == null){return null;}
+      var fuel = slot.get().info.xml.elementsNamed("fuel");
+      if(!fuel.hasNext()){return null;}
+      fuel = fuel.next();
+      var method = fuel.get("method");
+      var amt = Std.parseInt(fuel.get("value"));
+      var store_fuel = fuel.get('storeFuel');
+      if (store_fuel == null){store_fuel = false;}
+      var electric = fuel.get("electric");
+      if (electric == null){electric = isElectric;}
+
+        switch method {
+          case "add": info.fuel = info.fuel + (amt == null ? 0 : amt);
+          case "replace": info.fuel = (amt == null ? 0 : amt);
+          default: info.fuel = info.fuel;
+        }
+        fuelItems = [];
+        fuelMap = new StringMap();
+        for (o in fuel.elementsNamed("fuelChange")){
+            fuelMap.set(o.get("id"),Std.parseInt(o.get("value")));
+            fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value")));
+        }
+        if(fuelMap.keys().hasNext()){
+            info.fuelItems = fuelItems;
+            info.fuelMap = fuelMap;
+        }
+        if(method == "replace" && store_fuel == "true"){loadFuel(vehicle,slot.get());}
+        setElectric(vehicle);
+        }
     </action><action>
 
     function parseForFuel(s){
       var item = s.get();
-      if (s.get() == null){return;}
-      trace(item);
+      if (item == null){return;}
       var fuel = item.info.xml.elementsNamed("fuel");
-      trace(fuel);
       if (fuel == null || !fuel.hasNext()){return null;}
       if (fuel.hasNext()){
-        trace("hasNext");
-      fuel = fuel.next();
-      var fuelChange = new StringMap();
-      var fuelItem = new Array();
-      try{
-      for (o in fuel.elementsNamed("fuelChange")){
-        trace(o);
-        fuelChange.set(o.get("id"),Std.parseInt(o.get("value")));
-        fuelItem.push(Recipe.createFuel(o.get("id"),Std.parseInt(o.get("value"))));
-      };
-    }catch(e:Dynamic){trace(e);}
+        fuel = fuel.next();
+        trace(fuel);
+        var fuelChange = new StringMap();
+        var fuelItem = new Array();
+        for (o in fuel.elementsNamed("fuelChange")){
+          fuelChange.set(o.get("id"),Std.parseInt(o.get("value")));
+          fuelItem.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value"))));
+        }
       trace([fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem]);
       return [fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem];
     }
     }
 
-    function loadFuel(?v){
+    function loadFuel(?v,item){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
-      var slot = vehicle.equipment.getSlots();
-      while (slot.hasNext()){
-          slot1 = slot.next();
-          eItem = slot1.get();
-          if (eItem != null && eItem.info.xml.elementsNamed("fuel").next() != null) {
-              if (eItem.info.xml.elementsNamed("fuel").next().get("storeFuel") == "true"){
-                veh.fuel = eItem.value;
-                veh.info.fuel = eItem.getDurability();
-              }
-          }
-      }
+      var amt = item.value;
+      if (amt == null){amt = 0;}
+      vehicle.fuel = item.value;
     }
     </action><action>
 

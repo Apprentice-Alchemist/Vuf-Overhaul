@@ -12,11 +12,12 @@
     <!-- getMod("vuf_2.0").init.firstElement("changelog").children[0] -->
     <include id="vuf/vuf.xml"/>
     <vehicle id="jeep" extends="jeep">
+      <slot id="engine"/>
       <mount><invokeLater><action>mountVehicle(this);</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
       <changeEquip><action>updateVehicle(); trace("ChangeEquip");</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
-    <item id="jeep_fuel" type="equipment" slot="attack" equipOn="jeep" durability="1000">
+    <item id="jeep_fuel" type="equipment" slot="engine" equipOn="jeep" durability="1000">
       <fuel method="replace" value="1000" storeFuel="true">
         <fuelChange id="coal" value="50"/>
         <fuelChange id="oil" value="100"/>
