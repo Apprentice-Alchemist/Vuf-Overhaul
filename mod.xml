@@ -19,15 +19,13 @@
     </vehicle>
     <item id="jeep_fuel" type="equipment" slot="engine" equipOn="jeep" durability="1000">
       <fuel method="replace" value="1000" storeFuel="true">
-        <fuelChange id="coal" value="50"/>
-        <fuelChange id="oil" value="100"/>
-        <fuelChange id="refined_oil" value="500"/>
+        <fuelChange id="coal" fuel="50"/>
+        <fuelChange id="oil" fuel="100"/>
+        <fuelChange id="refined_oil" fuel="500"/>
       </fuel>
     </item>
     <item id="jeep_repair" type="equipment" slot="attack" equipOn="jeep">
-      <repair>
         <repairChange id="wood" value="10"/>
-      </repair>
     </item>
     <item id="jeep_fly" type="equipment" slot="attack" equipOn="jeep" flight_height="100"/>
     <item id="jeep_health" type="equipment" slot="attack" equipOn="jeep" icon="stat.health" health="500"/>

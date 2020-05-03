@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vuf>
+<action>
+  VUF = {};
+  VUF.Log = {};
+  VUF.Log.format = function(e,type,?infos){
+    switch type {
+      case "error": return "VUF Error : " + e;
+      case "warn": return "VUF Warning : " + e;
+      case "info": return "VUF Info : " + e;
+      default: return "VUF : " + e;
+    }
+  }
+  VUF.error = function(e,?infos){
+    log(VUF.Log.format(e,"error",infos),0xff0000);
+  }
+  VUF.info = function(e,?infos){
+    log(VUF.Log.format(e,"info",infos),0x00ffff);
+  }
+  VUF.warn = function(e,?infos){
+    log(VUF.format(e,"warn",infos == null ? null : infos),0xff4500);
+  }
+
+</action>
   <action>
+  // p2 = eval("\"_\"+\"_\"")
     function mountVehicle(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
@@ -16,7 +39,7 @@
 </action><action>
     function dismountVehicle(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
-      trace("dismount");
+      // VUF.info("dismount");
       if (vehicle == null) return;
       var slot = vehicle.equipment.getSlots();
       while(slot.hasNext()) {
@@ -107,68 +130,110 @@
       var xml = info.xml;
       var max_fuel = 0;
       var maxReplaceFuel = 0;
-      var isElectric = vehicle.fuelName == "power";
+      var isElectric = vehicle.isPowered();
       var slot = vehicle.equipment.get("engine");
-      if (slot.get() == null){return null;}
+      if (slot.get() == null){
+          if(info.xml.first != null){
+              for(o in info.xml.second.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.second.xml.removeChild(o);
+                }
+            }
+          }else{
+              for(o in info.xml.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.xml.removeChild(o);
+                }
+              }
+          }
+          vehicle.fuelName = info.xml.exists("fuelName") ? info.xml.get("fuelName") : vehicle.isPowered() ? "power" : "fuel";
+        return null;
+      }
       var fuel = slot.get().info.xml.elementsNamed("fuel");
-      if(!fuel.hasNext()){return null;}
+      if(!fuel.hasNext()){
+          if(info.xml.first != null){
+              for(o in info.xml.second.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.second.xml.removeChild(o);
+                }
+            }
+          }else{
+              for(o in info.xml.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.xml.removeChild(o);
+                }
+              }
+          }
+          vehicle.fuelName = info.xml.exists("fuelName") ? info.xml.get("fuelName") : vehicle.isPowered() ? "power" : "fuel";
+        return null;}
       fuel = fuel.next();
-      var method = fuel.get("method");
       var amt = Std.parseInt(fuel.get("value"));
       var store_fuel = fuel.get('storeFuel');
-      if (store_fuel == null){store_fuel = false;}
       var electric = fuel.get("electric");
-      if (electric == null){electric = isElectric;}
-
-        switch method {
+        switch fuel.get("method") {
           case "add": info.fuel = info.fuel + (amt == null ? 0 : amt);
           case "replace": info.fuel = (amt == null ? 0 : amt);
-          default: info.fuel = info.fuel;
+          default: info.fuel = info.fuel + (amt == null ? 0 : amt);
         }
-        fuelItems = [];
-        fuelMap = new StringMap();
-        for (o in fuel.elementsNamed("fuelChange")){
-            fuelMap.set(o.get("id"),Std.parseInt(o.get("value")));
-            fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value"))));
+        if (fuel.elementsNamed("fuelChange").hasNext()){
+          info.fuelItems = [];
+          info.fuelMap = new StringMap();
+        for(o in fuel.elementsNamed("fuelChange")){
+              info.fuelMap.set(o.get("id"),Std.parseInt(o.get("fuel")));
+              info.fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("fuel"))));
+          }
+          if(info.xml.first != null){
+            info.xml.second.xml.addChild(Xml.createElement("fuel"));
+          }else{
+          info.xml.xml.addChild(Xml.createElement("fuel"));
+          }
+        vehicle.fuelName = "fuel";
+        }else{
+            info.fuelItems = [];
+            info.fuelMap = new StringMap();
+          for(o in info.xml.elementsNamed("fuel")){
+            info.fuelMap.set(o.get("id"),Std.parseInt(o.get("fuel")));
+            info.fuelItems.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("fuel"))));
+          }
         }
-        if(fuelMap.keys().hasNext()){
-            info.fuelItems = fuelItems;
-            info.fuelMap = fuelMap;
+
+        if(vehicle.fuelItems == []){
+          vehicle.fuelName = "power";
+          if(info.xml.first != null){
+              for(o in info.xml.second.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.second.xml.removeChild(o);
+                }
+            }
+          }else{
+              for(o in info.xml.xml.children){
+                if(o.nodeName == "fuel" && o.get("fuel") == null){
+                  info.xml.xml.removeChild(o);
+                }
+              }
+          }
         }
-        if(method == "replace" && store_fuel == "true"){loadFuel(vehicle,slot.get());}
-        setElectric(vehicle);
+
+        if(fuel.get("method") == "replace" && fuel.get('storeFuel') == "true"){
+          loadFuel(vehicle,slot.get());
+        }
         }
     </action><action>
 
-    function parseForFuel(s){
-      var item = s.get();
-      if (item == null){return;}
-      var fuel = item.info.xml.elementsNamed("fuel");
-      if (fuel == null || !fuel.hasNext()){return null;}
-      if (fuel.hasNext()){
-        fuel = fuel.next();
-        trace(fuel);
-        var fuelChange = new StringMap();
-        var fuelItem = new Array();
-        for (o in fuel.elementsNamed("fuelChange")){
-          fuelChange.set(o.get("id"),Std.parseInt(o.get("value")));
-          fuelItem.push(Recipe.createFuel(getItem(o.get("id")),Std.parseInt(o.get("value"))));
-        }
-      trace([fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem]);
-      return [fuel.get("method"),Std.parseInt(fuel.get("value")),fuel.get("electric"),fuelChange,fuelItem];
-    }
-    }
 
     function loadFuel(?v,item){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
-      var amt = item.value;
-      if (amt == null){amt = 0;}
-      vehicle.fuel = item.value;
+      var amt = item.getFeed();
+      if (amt == null){amt = vehicle.fuel;}
+      // vehicle.info.fuel = item.getDurability();
+      vehicle.fuel = amt;
     }
     </action><action>
 
     function updateRepair(?v){
-      trace("updateRepair is not enabled yet");
+      var vehicle = (v == null) ? getLocalPlayer().vehicle : v;
+      var info = vehicle.info;
+
     }
     </action><action>
 
@@ -181,12 +246,13 @@
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       if (vehicle == null) return;
       var info = vehicle.info;
+      var xml = info.xml.first == null ? info.xml.xml : info.xml.second.xml;
         vehicle.fuelName = "power";
         info.fuelItems = null;
         info.fuelMap = null;
         x = new Xml();
         x.nodeName = "fuelStorage";
-        info.xml.xml.addChild(x);
+        xml.addChild(x);
         for (fXml in info.xml.elementsNamed("fuel")) {
             x.addChild(fXml);
         }
@@ -195,21 +261,16 @@
 
     function storeFuel(event) {
         var veh = event.target;
-        trace(veh);
-        var slot = veh.equipment.getSlots();
-        trace(slot);
-        while (slot.hasNext()){
-          slot1 = slot.next();
-          trace(slot1);
-          trace(slot1.get());
-          eItem = slot1.get() == null ? null : slot1.get();
-          trace(eItem);
-          if (eItem == null){trace("Continue");continue; }
-          if (eItem != null && eItem.info.xml.elementsNamed("fuel").next() != null) {
-            trace("Hmmm");
-              if (eItem.info.xml.elementsNamed("fuel").next().get("storeFuel") == "true"){
-                eItem.value = veh.fuel;
-              }
+        var slot = veh.equipment.get("engine");
+        var item = slot.get();
+        if(item != null){
+          var fuel = item.info.xml.elementsNamed("fuel");
+          if(fuel.hasNext()){
+            var tmp = fuel.next();
+            if(tmp.get("storeFuel") == "true"){
+              item.value = item.getDurability() - veh.getFuel();
+              if(item.value &lt; 0) item.value = 0;
+            }
           }
         }
     }
