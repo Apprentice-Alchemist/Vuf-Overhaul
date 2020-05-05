@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mod>
-  <name>Vuf 2.0</name>
-  <description>A new VUF.</description>
+  <name>Vehicle Upgrade Framework 2</name>
+  <description>A new VUF. Includes a modified version of the old Vuf.</description>
   <author>Apprentice Alchemist</author>
-  <version>0.0.0</version>
-
+  <version>1.0.0</version>
   <init>
-    <changelog>
-      A changelog!
-    </changelog>
-    <!-- getMod("vuf_2.0").init.firstElement("changelog").children[0] -->
     <include id="vuf/vuf.xml"/>
+    <include id="vuf/vuf_old.xml"/>
+    <!--
     <vehicle id="jeep" extends="jeep">
       <slot id="engine"/>
-      <mount><invokeLater><action>mountVehicle(this);</action><invokeLater><action>this.runEvent(player,'changeEquip');</action></invokeLater></invokeLater></mount>
-      <changeEquip><action>updateVehicle(); trace("ChangeEquip");</action></changeEquip>
+      <mount><invokeLater><action>mountVehicle(this);</action><invokeLater><action>updateVehicle(this);</action></invokeLater></invokeLater></mount>
+      <changeEquip><action>updateVehicle();</action></changeEquip>
       <onDismount><action>dismountVehicle(player.vehicle);</action></onDismount>
     </vehicle>
     <item id="jeep_fuel" type="equipment" slot="engine" equipOn="jeep" durability="1000">
@@ -42,5 +39,6 @@
     </item>
     <item id="jeep_speed" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" speed="5" speedY="5"/>
     <item id="jeep_hitDamage" type="equipment" slot="attack" equipOn="jeep" icon="stat.endurance" hitDamage="200"/>
-  </init>
+   -->
+   </init>
 </mod>

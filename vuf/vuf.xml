@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<vuf>
-<action>
-  VUF = {};
-  VUF.Log = {};
-  VUF.Log.format = function(e,type,?infos){
-    switch type {
-      case "error": return "VUF Error : " + e;
-      case "warn": return "VUF Warning : " + e;
-      case "info": return "VUF Info : " + e;
-      default: return "VUF : " + e;
-    }
-  }
-  VUF.error = function(e,?infos){
-    log(VUF.Log.format(e,"error",infos),0xff0000);
-  }
-  VUF.info = function(e,?infos){
-    log(VUF.Log.format(e,"info",infos),0x00ffff);
-  }
-  VUF.warn = function(e,?infos){
-    log(VUF.format(e,"warn",infos == null ? null : infos),0xff4500);
-  }
-
-</action>
+<apprenticealchemist>
   <action>
   // p2 = eval("\"_\"+\"_\"")
     function mountVehicle(?v){
@@ -39,7 +17,6 @@
 </action><action>
     function dismountVehicle(?v){
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
-      // VUF.info("dismount");
       if (vehicle == null) return;
       var slot = vehicle.equipment.getSlots();
       while(slot.hasNext()) {
@@ -61,7 +38,8 @@
         updateWeight(vehicle);
         updateHitDamage(vehicle);
         updateCloak(vehicle);
-        vehicle.gui.init();
+        updateRepair(vehicle);
+        // vehicle.gui.init();
     }
 </action><action>
     function getStat(stat, ?v){
@@ -214,9 +192,7 @@
           }
         }
 
-        if(fuel.get("method") == "replace" && fuel.get('storeFuel') == "true"){
-          loadFuel(vehicle,slot.get());
-        }
+        if(fuel.get("method") == "replace" && fuel.get('storeFuel') == "true") loadFuel(vehicle,slot.get());
         }
     </action><action>
 
@@ -225,21 +201,37 @@
       var vehicle = v == null ? getLocalPlayer().vehicle : v;
       var amt = item.getFeed();
       if (amt == null){amt = vehicle.fuel;}
-      // vehicle.info.fuel = item.getDurability();
-      vehicle.fuel = amt;
+      vehicle.setFuel(amt);
     }
     </action><action>
 
     function updateRepair(?v){
       var vehicle = (v == null) ? getLocalPlayer().vehicle : v;
       var info = vehicle.info;
-
+      var equipment = vehicle.equipment;
+      info.repairItems = [];
+      info.repairMap = new StringMap();
+      for(o in equipment.getSlots()){
+        var tmp = equipment.get(o);
+        if(tmp.get() == null){
+        }else{
+          var tmp = tmp.get().info.xml.elementsNamed("repairChange");
+          for(r in tmp){
+            info.repairItems.push(new ItemCt(getItem(r.get("id")),Std.parseInt(r.get("value"))));
+            info.repairMap.set(getItem(r.get("id")).id,Std.parseInt(r.get("value")));
+          }
+        }
+      }
+      if(info.repairItems.length &lt; 1){
+        var tmp2 = info.xml.elementsNamed("repair");
+        for(r in tmp2){
+          info.repairItems.push(new ItemCt(getItem(r.get("id")),Std.parseInt(r.get("value"))));
+          info.repairMap.set(getItem(r.get("id")).id,Std.parseInt(r.get("value")));
+        }
+      }
     }
     </action><action>
 
-    // function updateRefuel(?v){
-    //   trace("updateRefuel is not enabled yet");
-    // }
     </action><action>
 
     function setElectric(?v){
@@ -310,6 +302,5 @@
         if (vehicle.renderer.alpha &lt;= 0.5) vehicle.renderer.lerp(new AlphaKeyframe(1),10);
       }
     }
-
-  </action>
-</vuf>
+    </action>
+  </apprenticealchemist>

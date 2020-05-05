@@ -40,7 +40,7 @@
             }
 
             if (info.xml.elementsNamed("electric").next() != null) {
-                setElectric(player.vehicle.info, player.vehicle);
+                oldsetElectric(player.vehicle.info, player.vehicle);
             }
         }
 
@@ -75,7 +75,7 @@
             }
 
             if (player.vehicle.info.xml.elementsNamed("electric").next() != null) {
-                setElectric(player.vehicle.info, player.vehicle);
+                oldsetElectric(player.vehicle.info, player.vehicle);
             }
         }
 
@@ -120,7 +120,7 @@
             }
         }
 
-        function setElectric(info, vehicle) {
+        function oldsetElectric(info, vehicle) {
             vehicle.fuelName = "power";
             info.fuelItems = null;
             info.fuelMap = null;
@@ -144,12 +144,12 @@
             info.xml.second.xml.removeChild(fsXml);
         }
 
-        function storeFuel(event) {
-            // if any equipment has storeFuel
+        function oldStoreFuel(event) {
+            // if any equipment has oldStoreFuel
             veh = event.target;
             for(eSlot in veh.equipment.iterator()) {
                 eItem = eSlot.get();
-                if (eItem != null && eItem.info.xml.elementsNamed('storeFuel').next() != null) {
+                if (eItem != null && eItem.info.xml.elementsNamed('oldStoreFuel').next() != null) {
                     eItem.value = eItem.info.getDurability() - veh.fuel;
                 }
             }
@@ -178,13 +178,17 @@
                 //player.vehicle.gui.init();
             </action>
             <closeWindows />
+            <invokeLater>
+              <action if="player.vehicle.gui != null">
+                player.vehicle.gui.init();
+              </action>
+            </invokeLater>
         </onEquip>
 
         <onUnequip>
     		<action>
                 if (player.vehicle == null) {
-                    trace('WARNING! UNEQUIPPING VUFB ITEMS ON NON-PLAYER VEHICLES IS NOT SUPPORTED!');
-                    return;
+                     throw 'WARNING! UNEQUIPPING VUFB ITEMS ON NON-PLAYER VEHICLES IS NOT SUPPORTED!';
                 }
 
                 changeOnUnequip(this.info, player);
@@ -193,9 +197,14 @@
                     player.vehicle.fuel = 0;
                 }
 
-                //player.vehicle.gui.init();
+
             </action>
             <closeWindows />
+            <invokeLater>
+              <action if="player.vehicle.gui != null">
+                player.vehicle.gui.init();
+              </action>
+            </invokeLater>
         </onUnequip>
     </item>
 
@@ -229,7 +238,7 @@
                 }
 
                 if (player.vehicle.info.xml.elementsNamed("electric").next() != null) {
-                    setElectric(player.vehicle.info, player.vehicle);
+                    oldsetElectric(player.vehicle.info, player.vehicle);
                 }
 
                 for (slot in player.vehicle.equipment.iterator()) {

@@ -2,15 +2,15 @@
 ***
 ##### Currently supported functionalities.
 ***
-* Health  `health="Int"`
-* Defense `defense="Int"`
-* Mine `mine_fuel & mine_speed & mine ="Int"`
-* Speed `speed="Int"`
-* Weight `maxe_weight="Int"`
-* HitDamage `hitDamage="Int"`
-* Cloaking `hide="Bool"` and
-> ```xml
-<handleSecond>
-<action>updateCloak(object)</action>
-</handleSecond>
-```
+* Health  
+* Defense
+* Mine
+* Speed
+* Weight
+* HitDamage
+* Cloaking
+* Fuel
+* Fuel changing
+* Repair changing
+
+Look at the commented out bit in the mod.xml for an example.
